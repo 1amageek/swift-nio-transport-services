@@ -13,24 +13,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import PackageDescription
-
-let manifestDirectoryURL = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-let manifestPath = manifestDirectoryURL.standardizedFileURL.path
-let isDependencyCheckout = manifestPath.contains("/.build/checkouts/")
-    || manifestPath.contains("/SourcePackages/checkouts/")
-
-func localOrForkDependency(_ repository: String, localPath: String) -> Package.Dependency {
-    let resolvedLocalPath = URL(fileURLWithPath: localPath, relativeTo: manifestDirectoryURL)
-        .standardizedFileURL
-        .path
-    if !isDependencyCheckout && FileManager.default.fileExists(atPath: resolvedLocalPath) {
-        return .package(path: resolvedLocalPath)
-    }
-
-    return .package(url: "https://github.com/1amageek/\(repository).git", branch: "main")
-}
 
 let applePlatforms: [Platform] = [.iOS, .macOS, .tvOS, .watchOS, .macCatalyst, .driverKit, .visionOS]
 
@@ -54,8 +37,8 @@ let package = Package(
         .library(name: "NIOTransportServices", targets: ["NIOTransportServices"])
     ],
     dependencies: [
-        localOrForkDependency("swift-nio", localPath: "../swift-nio"),
-        localOrForkDependency("swift-atomics", localPath: "../swift-atomics"),
+        .package(url: "https://github.com/1amageek/swift-nio.git", branch: "main"),
+        .package(url: "https://github.com/1amageek/swift-atomics.git", branch: "main"),
     ],
     targets: [
         .target(
